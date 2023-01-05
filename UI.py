@@ -28,6 +28,16 @@ font.setPixelSize(90)
 # buttons style
 style = "background-color:rgb(29, 185, 84);color:rgb(0,0,0);font-size:14px;"
 
+# Button
+def button_action(self):
+    print('somevalue')
+
+button = QtWidgets.QGraphicsProxyWidget()
+save_button = QtWidgets.QPushButton('Button 1')
+save_button.setStyleSheet(style)
+save_button.clicked.connect(button_action)
+button.setWidget(save_button)
+
 # Temperature graph
 temperature = graph_temperature()
 # Pressure Graph
@@ -45,6 +55,7 @@ l1 = Layout.addLayout(colspan=100, rowspan=1)
 l11 = l1.addLayout(rowspan=5, border=(83, 83, 83))
 
 # Creating the modules
+l11.addItem(button)
 l11.addItem(strain)
 l11.addItem(temperature)
 l11.addItem(pressure)
