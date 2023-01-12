@@ -69,7 +69,10 @@ connection_thread = threading.Thread(target=connection, daemon=True)
 
 
 def disconnect():
-    conn.send(b"quit")
+    try:
+        conn.send(b"quit")
+    except AttributeError as _:
+        pass
     sys.exit(1)
 
 
