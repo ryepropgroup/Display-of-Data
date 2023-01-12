@@ -28,9 +28,10 @@ font.setPixelSize(90)
 
 # buttons style
 style = "background-color:rgb(29, 185, 84);color:rgb(0,0,0);font-size:14px;"
+style2 = "background-color:rgb(29, 185, 84);color:rgb(0,0,0);font-size:14px;"
 
 
-HOST = "127.0.0.1"
+HOST = "10.42.0.249"
 PORT = 65432
 conn = None
 
@@ -40,12 +41,15 @@ def connection():
     global res
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
+            print("banana")
             s.bind((HOST, PORT))
         except Exception:
             print("Exception Error: Unable to Open Specified Port: " + str(PORT))
             return
         s.listen()
+        print("banana2")
         conn, addr = s.accept()
+        print("cool abananana")
         with conn:
             print(f"Connected by {addr}")
             # connect_button.pack_forget()
@@ -54,7 +58,8 @@ def connection():
             # s.recv()
             while True:
                 rec = conn.recv(1024).decode("utf-8")
-                pressure.update(int(res))
+                # print(rec)
+                pressure.update(rec)
                 if not rec:
                     conn.close()
                     sys.exit(1)
@@ -63,20 +68,26 @@ def connection():
 connection_thread = threading.Thread(target=connection, daemon=True)
 
 
-def connect():
-    connection_thread.start()
+def disconnect():
+    conn.send(b"quit")
+    sys.exit(1)
 
 
-# Button
-def button_action(self):
-    connect()
+def send_open():
+    conn.send(b"open")
 
 
 button = QtWidgets.QGraphicsProxyWidget()
-save_button = QtWidgets.QPushButton("Button 1")
+save_button = QtWidgets.QPushButton("Send Open")
 save_button.setStyleSheet(style)
-save_button.clicked.connect(button_action)
+save_button.clicked.connect(send_open)
 button.setWidget(save_button)
+
+button2 = QtWidgets.QGraphicsProxyWidget()
+save_button2 = QtWidgets.QPushButton("Disconnect")
+save_button2.setStyleSheet(style)
+save_button2.clicked.connect(disconnect)
+button2.setWidget(save_button2)
 
 # Temperature graph
 temperature = graph_temperature()
@@ -95,29 +106,30 @@ l1 = Layout.addLayout(colspan=100, rowspan=1).addLayout(rowspan=5, border=(83, 8
 
 # Creating the modules
 l1.addItem(button)
+l1.addItem(button2)
 l1.addItem(strain)
 l1.addItem(temperature)
 l1.addItem(pressure)
 l1.addItem(time)
 
 
-def update():
-    try:
-        value_chain = []
-        value_chain = ser.getData()
-        strain.update(value_chain[1])
-        temperature.update(value_chain[3])
-        time.update()
-    except IndexError:
-        print("starting, please wait a moment")
+# def update():
+#     try:
+#         value_chain = []
+#         value_chain = ser.getData()
+#         strain.update(value_chain[1])
+#         temperature.update(value_chain[3])
+#         # time.update()
+#     except IndexError:
+#         print("starting, please wait a moment")
 
-
-if True:
-    timer = pg.QtCore.QTimer()
-    timer.timeout.connect(update)
-    timer.start(1)
-else:
-    print("something is wrong with the update call")
 
 if __name__ == "__main__":
+    connection_thread.start()
     QtWidgets.QApplication.instance().exec()
+    # if True:
+    #     timer = pg.QtCore.QTimer()
+    #     timer.timeout.connect(update)
+    #     timer.start(1)
+    # else:
+    #     print("something is wrong with the update call")
