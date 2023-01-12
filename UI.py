@@ -57,7 +57,7 @@ def connection():
             #            conn.sendall(b"Welcome to Borealis Mission Control")
             # s.recv()
             while True:
-                rec = conn.recv(1024).decode("utf-8")
+                rec = conn.recv(1024)
                 # print(rec)
                 pressure.update(rec)
                 if not rec:

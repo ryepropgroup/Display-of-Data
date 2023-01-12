@@ -25,7 +25,7 @@ class graph_pressure(pg.PlotItem):
         self.ptr = 0
 
     def update(self, value):
-        self.presssure_data.append(int(value))
+        self.presssure_data.append(int(value.decode("utf-8")))
         self.ptr += 1
         self.presssure_plot.setData(list(self.presssure_data))
         self.presssure_plot.setPos(self.ptr, 0)
